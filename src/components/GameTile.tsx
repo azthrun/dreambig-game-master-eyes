@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { TILE_TAP_HINT_MS } from '../game/constants';
+import { playTapSound } from '../game/audio';
 import type { Tile } from '../game/types';
 
 interface GameTileProps {
@@ -20,6 +21,7 @@ export const GameTile = ({ tile, onPress }: GameTileProps) => {
   }, []);
 
   const handlePress = () => {
+    playTapSound();
     onPress(tile.id);
     setShowTapHint(true);
 
