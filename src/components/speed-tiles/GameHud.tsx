@@ -1,4 +1,4 @@
-import { MAX_FAILURES } from '../game/constants';
+import { MAX_FAILURES } from '../../game/constants';
 
 interface GameHudProps {
   readonly timerText: string;

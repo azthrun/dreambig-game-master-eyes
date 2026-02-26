@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { BOARD_SIZES } from '../game/constants';
-import type { BoardSize } from '../game/types';
+import { BOARD_SIZES } from '../../game/constants';
+import type { BoardSize } from '../../game/types';
 
 interface MainMenuProps {
   readonly onSelect: (size: BoardSize) => void;

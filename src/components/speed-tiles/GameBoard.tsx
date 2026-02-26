@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import type { BoardSize, Tile } from '../game/types';
+import type { BoardSize, Tile } from '../../game/types';
 import { GameTile } from './GameTile';
 
 interface GameBoardProps {

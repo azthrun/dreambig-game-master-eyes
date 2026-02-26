@@ -1,9 +1,9 @@
 import { useEffect, useReducer } from 'react';
-import { CountdownView } from '../components/CountdownView';
-import { GameBoard } from '../components/GameBoard';
-import { GameHud } from '../components/GameHud';
-import { MainMenu } from '../components/MainMenu';
-import { ResultModal } from '../components/ResultModal';
+import { MainMenu } from '../components/main-menu/MainMenu';
+import { CountdownView } from '../components/speed-tiles/CountdownView';
+import { GameBoard } from '../components/speed-tiles/GameBoard';
+import { GameHud } from '../components/speed-tiles/GameHud';
+import { ResultModal } from '../components/speed-tiles/ResultModal';
 import { ERROR_FLASH_MS, TIMER_TICK_MS } from '../game/constants';
 import { gameReducer, initialState } from '../game/reducer';
 import { formatElapsed } from '../game/utils';

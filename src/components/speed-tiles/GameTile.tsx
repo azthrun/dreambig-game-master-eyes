@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { TILE_TAP_HINT_MS } from '../game/constants';
-import { playTapSound } from '../game/audio';
-import type { Tile } from '../game/types';
+import { playTapSound } from '../../game/audio';
+import { TILE_TAP_HINT_MS } from '../../game/constants';
+import type { Tile } from '../../game/types';
 
 interface GameTileProps {
   readonly tile: Tile;
