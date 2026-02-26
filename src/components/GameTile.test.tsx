@@ -4,7 +4,7 @@ import { TILE_TAP_HINT_MS } from '../game/constants';
 import { GameTile } from './GameTile';
 
 describe('GameTile', () => {
-  it('shows a temporary tap hint and resets after 500ms', () => {
+  it('shows a temporary tap hint and resets after 200ms', () => {
     vi.useFakeTimers();
     const onPress = vi.fn();
 
