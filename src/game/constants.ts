@@ -20,3 +20,4 @@ export const COUNTDOWN_SECONDS = 3;
 export const WRONG_CLICK_PENALTY_MS = 2000;
 export const TIMER_TICK_MS = 50;
 export const ERROR_FLASH_MS = 350;
+export const TILE_TAP_HINT_MS = 200;

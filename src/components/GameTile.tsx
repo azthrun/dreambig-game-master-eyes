@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
+import { TILE_TAP_HINT_MS } from '../game/constants';
 import type { Tile } from '../game/types';
 
 interface GameTileProps {
@@ -6,11 +8,36 @@ interface GameTileProps {
 }
 
 export const GameTile = ({ tile, onPress }: GameTileProps) => {
+  const [showTapHint, setShowTapHint] = useState(false);
+  const hintTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (hintTimeoutRef.current !== null) {
+        window.clearTimeout(hintTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handlePress = () => {
+    onPress(tile.id);
+    setShowTapHint(true);
+
+    if (hintTimeoutRef.current !== null) {
+      window.clearTimeout(hintTimeoutRef.current);
+    }
+
+    hintTimeoutRef.current = window.setTimeout(() => {
+      setShowTapHint(false);
+      hintTimeoutRef.current = null;
+    }, TILE_TAP_HINT_MS);
+  };
+
   return (
     <button
       type="button"
-      onClick={() => onPress(tile.id)}
-      className="tile-button"
+      onClick={handlePress}
+      className={`tile-button ${showTapHint ? 'tile-tap-hint' : ''}`}
       style={{ borderColor: tile.borderColor }}
       aria-label={`tile ${tile.value}`}
     >

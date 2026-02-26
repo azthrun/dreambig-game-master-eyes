@@ -82,6 +82,17 @@ body {
   font-size: clamp(0.95rem, 2.2vw, 1.15rem);
 }
 
+.menu-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.menu-mode-button {
+  width: min(100%, 320px);
+  align-self: center;
+}
+
 .size-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -113,6 +124,30 @@ body {
 .size-button:active,
 .modal-action:active {
   transform: translateY(0) scale(0.99);
+}
+
+.menu-back {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  align-self: center;
+  transition: color 200ms ease-in-out;
+}
+
+.menu-back:hover {
+  color: #d3e5ff;
+}
+
+.size-button:focus-visible,
+.modal-action:focus-visible,
+.menu-back:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .countdown-card {
@@ -264,6 +299,12 @@ body {
 
 .tile-button:active {
   transform: scale(0.97);
+}
+
+.tile-tap-hint {
+  background:
+    radial-gradient(circle at 28% 25%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1) 45%),
+    linear-gradient(180deg, rgba(32, 84, 136, 0.92), rgba(16, 52, 96, 0.96));
 }
 
 .tile-correct {
