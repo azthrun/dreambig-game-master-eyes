@@ -1,6 +1,5 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import { MainMenu } from '../components/main-menu/MainMenu';
-import { Leaderboard } from '../components/main-menu/Leaderboard';
 import { CountdownView } from '../components/speed-tiles/CountdownView';
 import { GameBoard } from '../components/speed-tiles/GameBoard';
 import { GameHud } from '../components/speed-tiles/GameHud';
@@ -13,7 +12,6 @@ import type { ResultState } from '../game/types';
 
 export const App = () => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   useEffect(() => {
     if (state.phase !== 'countdown') {
@@ -97,15 +95,9 @@ export const App = () => {
         {state.phase === 'menu' ? (
           <MainMenu
             onSelect={(size) => {
-              setShowLeaderboard(false);
               dispatch({ type: 'SELECT_BOARD', size });
             }}
-            onShowLeaderboard={() => setShowLeaderboard(true)}
           />
-        ) : null}
-
-        {showLeaderboard ? (
-          <Leaderboard onBack={() => setShowLeaderboard(false)} />
         ) : null}
 
         {state.phase === 'countdown' ? <CountdownView secondsRemaining={state.secondsRemaining} /> : null}

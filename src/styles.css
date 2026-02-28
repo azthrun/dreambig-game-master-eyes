@@ -628,6 +628,36 @@ body {
   border-color: rgba(168, 189, 220, 0.6);
 }
 
+.leaderboard-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.leaderboard-tab {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(114, 234, 255, 0.3);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+.leaderboard-tab:hover {
+  border-color: rgba(114, 234, 255, 0.6);
+  color: #d3e5ff;
+}
+
+.leaderboard-tab-active {
+  border-color: var(--accent);
+  background: rgba(100, 232, 255, 0.15);
+  color: var(--accent);
+}
+
 .leaderboard-loading,
 .leaderboard-empty,
 .leaderboard-error {

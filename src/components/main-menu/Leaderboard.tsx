@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import type { LeaderboardEntry } from '../../game/types';
+import type { BoardSize, LeaderboardEntry } from '../../game/types';
 import { Snackbar } from './Snackbar';
+import { BOARD_SIZES } from '../../game/constants';
 
 interface LeaderboardProps {
   readonly onBack: () => void;
@@ -11,6 +12,7 @@ export const Leaderboard = ({ onBack }: LeaderboardProps) => {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedBoardSize, setSelectedBoardSize] = useState<BoardSize>(3);
 
   const fetchLeaderboard = async () => {
     setLoading(true);
@@ -26,8 +28,9 @@ export const Leaderboard = ({ onBack }: LeaderboardProps) => {
     const { data, error: fetchError } = await supabase
       .from('speed_tiles')
       .select('id, player_name, board_size, completion_time_ms, created_date')
+      .eq('board_size', selectedBoardSize)
       .order('completion_time_ms', { ascending: true })
-      .limit(20);
+      .limit(10);
 
     if (fetchError) {
       setError(fetchError.message);
@@ -40,7 +43,7 @@ export const Leaderboard = ({ onBack }: LeaderboardProps) => {
 
   useEffect(() => {
     fetchLeaderboard();
-  }, []);
+  }, [selectedBoardSize]);
 
   const formatTime = (ms: number): string => {
     const minutes = Math.floor(ms / 60000);
@@ -64,6 +67,19 @@ export const Leaderboard = ({ onBack }: LeaderboardProps) => {
           </button>
         </header>
 
+        <div className="leaderboard-tabs">
+          {BOARD_SIZES.map((size) => (
+            <button
+              key={size}
+              type="button"
+              onClick={() => setSelectedBoardSize(size)}
+              className={`leaderboard-tab ${selectedBoardSize === size ? 'leaderboard-tab-active' : ''}`}
+            >
+              {size}x{size}
+            </button>
+          ))}
+        </div>
+
         {loading ? (
           <div className="leaderboard-loading">Loading...</div>
         ) : error ? (
@@ -84,7 +100,6 @@ export const Leaderboard = ({ onBack }: LeaderboardProps) => {
                 <tr>
                   <th>#</th>
                   <th>Name</th>
-                  <th>Board</th>
                   <th>Time</th>
                 </tr>
               </thead>
@@ -93,7 +108,6 @@ export const Leaderboard = ({ onBack }: LeaderboardProps) => {
                   <tr key={entry.id}>
                     <td className="leaderboard-rank">{index + 1}</td>
                     <td className="leaderboard-name">{entry.player_name}</td>
-                    <td className="leaderboard-size">{entry.board_size}x{entry.board_size}</td>
                     <td className="leaderboard-time">{formatTime(entry.completion_time_ms)}</td>
                   </tr>
                 ))}

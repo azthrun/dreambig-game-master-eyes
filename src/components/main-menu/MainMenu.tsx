@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { BOARD_SIZES } from '../../game/constants';
 import type { BoardSize } from '../../game/types';
+import { Leaderboard } from './Leaderboard';
 
 interface MainMenuProps {
   readonly onSelect: (size: BoardSize) => void;
-  readonly onShowLeaderboard: () => void;
 }
 
-export const MainMenu = ({ onSelect, onShowLeaderboard }: MainMenuProps) => {
+export const MainMenu = ({ onSelect }: MainMenuProps) => {
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const subtitle = selectedGame
     ? 'Choose a board size to start the round.'
     : 'Choose a game mode to continue.';
@@ -16,7 +17,9 @@ export const MainMenu = ({ onSelect, onShowLeaderboard }: MainMenuProps) => {
   return (
     <section className="menu-card view-transition view-enter">
       <header className="menu-header">
-        <h1 className="menu-title">Master Eyes</h1>
+        <h1 className="menu-title">
+          {selectedGame === 'speed-tiles' ? 'Speed Tiles' : 'Master Eyes'}
+        </h1>
         <p className="menu-subtitle">{subtitle}</p>
       </header>
 
@@ -30,7 +33,7 @@ export const MainMenu = ({ onSelect, onShowLeaderboard }: MainMenuProps) => {
             Speed Tiles
           </button>
         </div>
-      ) : selectedGame === 'speed-tiles' ? (
+      ) : selectedGame === 'speed-tiles' && !showLeaderboard ? (
         <div className="menu-mode">
           <div className="size-grid">
             {BOARD_SIZES.map((size) => (
@@ -47,7 +50,7 @@ export const MainMenu = ({ onSelect, onShowLeaderboard }: MainMenuProps) => {
 
           <button
             type="button"
-            onClick={onShowLeaderboard}
+            onClick={() => setShowLeaderboard(true)}
             className="size-button menu-mode-button"
           >
             Leaderboard
@@ -57,6 +60,8 @@ export const MainMenu = ({ onSelect, onShowLeaderboard }: MainMenuProps) => {
             Back
           </button>
         </div>
+      ) : selectedGame === 'speed-tiles' && showLeaderboard ? (
+        <Leaderboard onBack={() => setShowLeaderboard(false)} />
       ) : null}
     </section>
   );
