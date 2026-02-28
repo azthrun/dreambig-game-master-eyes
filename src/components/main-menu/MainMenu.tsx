@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BOARD_SIZES } from '../../game/constants';
 import type { BoardSize } from '../../game/types';
 import { Leaderboard } from './Leaderboard';
+import gameLogo from '../../assets/game-logo.png';
 
 interface MainMenuProps {
   readonly onSelect: (size: BoardSize) => void;
@@ -10,18 +11,21 @@ interface MainMenuProps {
 export const MainMenu = ({ onSelect }: MainMenuProps) => {
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const subtitle = selectedGame
-    ? 'Choose a board size to start the round.'
-    : 'Choose a game mode to continue.';
 
   return (
     <section className="menu-card view-transition view-enter">
-      <header className="menu-header">
-        <h1 className="menu-title">
-          {selectedGame === 'speed-tiles' ? 'Speed Tiles' : 'Master Eyes'}
-        </h1>
-        <p className="menu-subtitle">{subtitle}</p>
-      </header>
+      {!showLeaderboard && (
+        <header className="menu-header">
+          {!selectedGame ? (
+            <img src={gameLogo} alt="Rush & Reaction" className="menu-logo" />
+          ) : (
+            <>
+              <h1 className="menu-title">Speed Tiles</h1>
+              <p className="menu-subtitle">Choose a board size to start the round.</p>
+            </>
+          )}
+        </header>
+      )}
 
       {!selectedGame ? (
         <div className="menu-mode">

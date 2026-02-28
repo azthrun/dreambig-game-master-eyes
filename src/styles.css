@@ -67,6 +67,13 @@ body {
   margin-bottom: 20px;
 }
 
+.menu-logo {
+  width: clamp(320px, 80vw, 440px);
+  height: auto;
+  display: block;
+  margin: 0 auto 12px;
+}
+
 .menu-title {
   margin: 0;
   font-size: clamp(2rem, 5vw, 3.4rem);
@@ -590,9 +597,7 @@ body {
   width: min(100%, 520px);
   max-height: 90%;
   border-radius: 20px;
-  border: 1px solid var(--card-border);
   background: linear-gradient(165deg, rgba(20, 30, 56, 0.95), rgba(7, 12, 24, 0.95));
-  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.42);
   padding: clamp(18px, 4.5vw, 28px);
   display: flex;
   flex-direction: column;

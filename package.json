@@ -1,7 +1,7 @@
 {
-  "name": "dreambig-game-master-eyes",
-  "version": "1.0.0",
-  "description": "Project Master Eyes",
+  "name": "rush-and-reaction",
+  "version": "1.1.0",
+  "description": "A fast-paced reaction game where players must tap numbered tiles in sequential order as quickly as possible.",
   "directories": {
     "doc": "docs"
   },
