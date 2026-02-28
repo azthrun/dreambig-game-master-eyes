@@ -4,6 +4,7 @@ import { Snackbar } from '../main-menu/Snackbar';
 interface ResultModalProps {
   readonly resultState: ResultState;
   readonly onBackToMenu: () => void;
+  readonly onPlayAgain: () => void;
   readonly onSetPlayerName: (name: string) => void;
   readonly onSubmitScore: () => void;
   readonly onRetrySubmit: () => void;
@@ -13,6 +14,7 @@ interface ResultModalProps {
 export const ResultModal = ({
   resultState,
   onBackToMenu,
+  onPlayAgain,
   onSetPlayerName,
   onSubmitScore,
   onRetrySubmit,
@@ -57,14 +59,6 @@ export const ResultModal = ({
               />
               <div className="submission-actions">
                 <button
-                  type="button"
-                  className="skip-button"
-                  onClick={onBackToMenu}
-                  disabled={isSubmitting}
-                >
-                  Skip
-                </button>
-                <button
                   type="submit"
                   className="submit-button"
                   disabled={playerName.trim().length === 0 || isSubmitting}
@@ -73,15 +67,22 @@ export const ResultModal = ({
                 </button>
               </div>
             </form>
-          ) : (
-            <button type="button" onClick={onBackToMenu} className="modal-action">
-              Back to Main Menu
-            </button>
-          )}
+          ) : null}
 
           {submitSuccess && (
             <p className="submission-success-message">Score submitted successfully!</p>
           )}
+
+          <div className="result-actions">
+            {won && (
+              <button type="button" onClick={onPlayAgain} className="play-again-button">
+                Play Again
+              </button>
+            )}
+            <button type="button" onClick={onBackToMenu} className="modal-action">
+              Back to Main Menu
+            </button>
+          </div>
         </div>
       </div>
 

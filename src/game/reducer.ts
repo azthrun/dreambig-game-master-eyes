@@ -180,6 +180,16 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         submitError: null,
       };
     }
+    case 'PLAY_AGAIN': {
+      if (state.phase !== 'result') {
+        return state;
+      }
+      return {
+        phase: 'countdown',
+        boardSize: state.boardSize,
+        secondsRemaining: COUNTDOWN_SECONDS,
+      };
+    }
     default: {
       return state;
     }

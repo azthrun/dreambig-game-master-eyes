@@ -392,6 +392,35 @@ body {
   width: 100%;
 }
 
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.play-again-button {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(100, 232, 255, 0.6);
+  background: linear-gradient(180deg, rgba(20, 108, 150, 0.6), rgba(10, 51, 78, 0.45));
+  color: #e7f8ff;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 200ms ease-in-out, filter 200ms ease-in-out;
+}
+
+.play-again-button:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 12px rgba(100, 232, 255, 0.2);
+}
+
+.play-again-button:active {
+  transform: scale(0.98);
+}
+
 .view-transition {
   transition: opacity 260ms ease-in-out, transform 260ms ease-in-out;
 }

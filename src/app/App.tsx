@@ -122,6 +122,7 @@ export const App = () => {
           <ResultModal
             resultState={handleResultState}
             onBackToMenu={() => dispatch({ type: 'RETURN_TO_MENU' })}
+            onPlayAgain={() => dispatch({ type: 'PLAY_AGAIN' })}
             onSetPlayerName={(name) => dispatch({ type: 'SET_PLAYER_NAME', playerName: name })}
             onSubmitScore={handleSubmitScore}
             onRetrySubmit={() => dispatch({ type: 'RETRY_SUBMIT' })}

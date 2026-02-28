@@ -64,4 +64,5 @@ export type GameAction =
   | { readonly type: 'SUBMIT_SUCCESS' }
   | { readonly type: 'SUBMIT_ERROR'; readonly error: string }
   | { readonly type: 'DISMISS_SNACKBAR' }
-  | { readonly type: 'RETRY_SUBMIT' };
+  | { readonly type: 'RETRY_SUBMIT' }
+  | { readonly type: 'PLAY_AGAIN' };
