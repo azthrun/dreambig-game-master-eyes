@@ -4,11 +4,12 @@ import type { BoardSize } from '../../game/types';
 
 interface MainMenuProps {
   readonly onSelect: (size: BoardSize) => void;
+  readonly onShowLeaderboard: () => void;
 }
 
-export const MainMenu = ({ onSelect }: MainMenuProps) => {
-  const [showBoardSizes, setShowBoardSizes] = useState(false);
-  const subtitle = showBoardSizes
+export const MainMenu = ({ onSelect, onShowLeaderboard }: MainMenuProps) => {
+  const [selectedGame, setSelectedGame] = useState<string | null>(null);
+  const subtitle = selectedGame
     ? 'Choose a board size to start the round.'
     : 'Choose a game mode to continue.';
 
@@ -19,17 +20,17 @@ export const MainMenu = ({ onSelect }: MainMenuProps) => {
         <p className="menu-subtitle">{subtitle}</p>
       </header>
 
-      {!showBoardSizes ? (
+      {!selectedGame ? (
         <div className="menu-mode">
           <button
             type="button"
-            onClick={() => setShowBoardSizes(true)}
+            onClick={() => setSelectedGame('speed-tiles')}
             className="size-button menu-mode-button"
           >
             Speed Tiles
           </button>
         </div>
-      ) : (
+      ) : selectedGame === 'speed-tiles' ? (
         <div className="menu-mode">
           <div className="size-grid">
             {BOARD_SIZES.map((size) => (
@@ -44,11 +45,19 @@ export const MainMenu = ({ onSelect }: MainMenuProps) => {
             ))}
           </div>
 
-          <button type="button" onClick={() => setShowBoardSizes(false)} className="menu-back">
+          <button
+            type="button"
+            onClick={onShowLeaderboard}
+            className="size-button menu-mode-button"
+          >
+            Leaderboard
+          </button>
+
+          <button type="button" onClick={() => setSelectedGame(null)} className="menu-back">
             Back
           </button>
         </div>
-      )}
+      ) : null}
     </section>
   );
 };

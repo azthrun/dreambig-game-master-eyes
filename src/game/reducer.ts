@@ -12,6 +12,10 @@ const toResult = (state: PlayingState, won: boolean): GameState => ({
   elapsedMs: state.elapsedMs,
   failures: state.failures,
   won,
+  playerName: '',
+  isSubmitting: false,
+  submitError: null,
+  submitSuccess: false,
 });
 
 export const gameReducer = (state: GameState, action: GameAction): GameState => {
@@ -110,6 +114,71 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
     }
     case 'RETURN_TO_MENU': {
       return initialState;
+    }
+    case 'SET_PLAYER_NAME': {
+      if (state.phase !== 'result' || state.isSubmitting) {
+        return state;
+      }
+      return {
+        ...state,
+        playerName: action.playerName.slice(0, 50),
+        submitError: null,
+      };
+    }
+    case 'SUBMIT_SCORE': {
+      if (state.phase !== 'result' || !state.won || state.isSubmitting) {
+        return state;
+      }
+      const trimmedName = state.playerName.trim();
+      if (trimmedName.length === 0) {
+        return {
+          ...state,
+          submitError: 'Please enter your name',
+        };
+      }
+      return {
+        ...state,
+        isSubmitting: true,
+        submitError: null,
+      };
+    }
+    case 'SUBMIT_SUCCESS': {
+      if (state.phase !== 'result' || !state.isSubmitting) {
+        return state;
+      }
+      return {
+        ...state,
+        isSubmitting: false,
+        submitSuccess: true,
+      };
+    }
+    case 'SUBMIT_ERROR': {
+      if (state.phase !== 'result' || !state.isSubmitting) {
+        return state;
+      }
+      return {
+        ...state,
+        isSubmitting: false,
+        submitError: action.error,
+      };
+    }
+    case 'DISMISS_SNACKBAR': {
+      if (state.phase !== 'result') {
+        return state;
+      }
+      return {
+        ...state,
+        submitError: null,
+      };
+    }
+    case 'RETRY_SUBMIT': {
+      if (state.phase !== 'result' || !state.submitError) {
+        return state;
+      }
+      return {
+        ...state,
+        submitError: null,
+      };
     }
     default: {
       return state;

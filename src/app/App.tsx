@@ -1,5 +1,6 @@
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { MainMenu } from '../components/main-menu/MainMenu';
+import { Leaderboard } from '../components/main-menu/Leaderboard';
 import { CountdownView } from '../components/speed-tiles/CountdownView';
 import { GameBoard } from '../components/speed-tiles/GameBoard';
 import { GameHud } from '../components/speed-tiles/GameHud';
@@ -7,9 +8,12 @@ import { ResultModal } from '../components/speed-tiles/ResultModal';
 import { ERROR_FLASH_MS, TIMER_TICK_MS } from '../game/constants';
 import { gameReducer, initialState } from '../game/reducer';
 import { formatElapsed } from '../game/utils';
+import { supabase } from '../lib/supabase';
+import type { ResultState } from '../game/types';
 
 export const App = () => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   useEffect(() => {
     if (state.phase !== 'countdown') {
@@ -47,10 +51,62 @@ export const App = () => {
     return () => window.clearTimeout(id);
   }, [state]);
 
+  useEffect(() => {
+    const resultState = state;
+    if (resultState.phase !== 'result' || !resultState.won || !resultState.isSubmitting) {
+      return;
+    }
+
+    const submitScore = async () => {
+      if (!supabase) {
+        dispatch({ type: 'SUBMIT_ERROR', error: 'Supabase is not configured' });
+        return;
+      }
+
+      const trimmedName = resultState.playerName.trim();
+      if (trimmedName.length === 0) {
+        dispatch({ type: 'SUBMIT_ERROR', error: 'Please enter your name' });
+        return;
+      }
+
+      const { error } = await supabase.from('speed_tiles').insert({
+        player_name: trimmedName,
+        board_size: resultState.boardSize,
+        completion_time_ms: resultState.elapsedMs,
+      });
+
+      if (error) {
+        dispatch({ type: 'SUBMIT_ERROR', error: error.message });
+      } else {
+        dispatch({ type: 'SUBMIT_SUCCESS' });
+      }
+    };
+
+    submitScore();
+  }, [state]);
+
+  const handleSubmitScore = () => {
+    dispatch({ type: 'SUBMIT_SCORE' });
+  };
+
+  const handleResultState = state.phase === 'result' ? (state as ResultState) : null;
+
   return (
     <main className="app-shell">
       <section className="stage-shell">
-        {state.phase === 'menu' ? <MainMenu onSelect={(size) => dispatch({ type: 'SELECT_BOARD', size })} /> : null}
+        {state.phase === 'menu' ? (
+          <MainMenu
+            onSelect={(size) => {
+              setShowLeaderboard(false);
+              dispatch({ type: 'SELECT_BOARD', size });
+            }}
+            onShowLeaderboard={() => setShowLeaderboard(true)}
+          />
+        ) : null}
+
+        {showLeaderboard ? (
+          <Leaderboard onBack={() => setShowLeaderboard(false)} />
+        ) : null}
 
         {state.phase === 'countdown' ? <CountdownView secondsRemaining={state.secondsRemaining} /> : null}
 
@@ -70,11 +126,14 @@ export const App = () => {
           </div>
         ) : null}
 
-        {state.phase === 'result' ? (
+        {state.phase === 'result' && handleResultState ? (
           <ResultModal
-            won={state.won}
-            finalTime={formatElapsed(state.elapsedMs)}
+            resultState={handleResultState}
             onBackToMenu={() => dispatch({ type: 'RETURN_TO_MENU' })}
+            onSetPlayerName={(name) => dispatch({ type: 'SET_PLAYER_NAME', playerName: name })}
+            onSubmitScore={handleSubmitScore}
+            onRetrySubmit={() => dispatch({ type: 'RETRY_SUBMIT' })}
+            onDismissSnackbar={() => dispatch({ type: 'DISMISS_SNACKBAR' })}
           />
         ) : null}
       </section>
