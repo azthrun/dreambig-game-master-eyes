@@ -48,10 +48,11 @@ describe('gameReducer', () => {
   });
 
   it('plays number flash round and evaluates incorrect answer', () => {
-    let state = gameReducer(initialState, { type: 'START_NUMBER_FLASH', length: 4 });
+    let state = gameReducer(initialState, { type: 'START_NUMBER_FLASH', length: 4, revealMs: 200 });
     if (state.phase !== 'number_flash_waiting') {
       throw new Error('Expected waiting state');
     }
+    expect(state.revealMs).toBe(200);
 
     state = gameReducer(state, { type: 'NUMBER_FLASH_DELAY_ELAPSED' });
     if (state.phase !== 'number_flash_revealed') {

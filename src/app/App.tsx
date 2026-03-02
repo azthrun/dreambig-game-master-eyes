@@ -6,7 +6,7 @@ import { CountdownView } from '../components/speed-tiles/CountdownView';
 import { GameBoard } from '../components/speed-tiles/GameBoard';
 import { GameHud } from '../components/speed-tiles/GameHud';
 import { ResultModal } from '../components/speed-tiles/ResultModal';
-import { ERROR_FLASH_MS, NUMBER_FLASH_REVEAL_MS, TIMER_TICK_MS } from '../game/constants';
+import { ERROR_FLASH_MS, TIMER_TICK_MS } from '../game/constants';
 import { gameReducer, initialState } from '../game/reducer';
 import { formatElapsed } from '../game/utils';
 import { supabase } from '../lib/supabase';
@@ -70,7 +70,7 @@ export const App = () => {
 
     const id = window.setTimeout(() => {
       dispatch({ type: 'NUMBER_FLASH_HIDE_ELAPSED' });
-    }, NUMBER_FLASH_REVEAL_MS);
+    }, state.revealMs);
 
     return () => window.clearTimeout(id);
   }, [state]);
@@ -127,7 +127,9 @@ export const App = () => {
             onSelectBoardSize={(size) => {
               dispatch({ type: 'SELECT_BOARD', size });
             }}
-            onStartNumberFlash={(length) => dispatch({ type: 'START_NUMBER_FLASH', length })}
+            onStartNumberFlash={(length, revealMs) =>
+              dispatch({ type: 'START_NUMBER_FLASH', length, revealMs })
+            }
           />
         ) : null}
 

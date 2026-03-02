@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 interface NumberFlashBoardProps {
   readonly length: number;
   readonly visibleSequence: string | null;
@@ -17,6 +19,14 @@ export const NumberFlashBoard = ({
   onSubmit,
   onBackToMenu,
 }: NumberFlashBoardProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (showInput) {
+      inputRef.current?.focus();
+    }
+  }, [showInput]);
+
   return (
     <section className="number-flash-layout view-transition view-enter">
       <header className="number-flash-header">
@@ -30,7 +40,7 @@ export const NumberFlashBoard = ({
         }`}
         aria-live="polite"
       >
-        {visibleSequence ?? '•'.repeat(length)}
+        {visibleSequence ?? '\u00A0'}
       </div>
 
       {showInput ? (
@@ -46,6 +56,7 @@ export const NumberFlashBoard = ({
           </label>
           <input
             id="number-flash-answer"
+            ref={inputRef}
             className="number-flash-input"
             type="text"
             inputMode="numeric"

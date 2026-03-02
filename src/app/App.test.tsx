@@ -33,6 +33,7 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Number Flash' }));
     fireEvent.click(screen.getByRole('button', { name: '4 Numbers' }));
+    fireEvent.click(screen.getByRole('button', { name: '200ms' }));
 
     act(() => {
       vi.runOnlyPendingTimers();
@@ -41,8 +42,10 @@ describe('App', () => {
       vi.runOnlyPendingTimers();
     });
 
-    expect(screen.getByLabelText('Enter the sequence')).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText('Enter the sequence'), { target: { value: '0' } });
+    const input = screen.getByLabelText('Enter the sequence');
+    expect(input).toBeInTheDocument();
+    expect(input).toHaveFocus();
+    fireEvent.change(input, { target: { value: '0' } });
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
     expect(screen.getByText('Not Quite')).toBeInTheDocument();

@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
-import { BOARD_SIZES, NUMBER_FLASH_LENGTHS } from '../../game/constants';
-import type { BoardSize, GameMode, MenuView, NumberFlashLength } from '../../game/types';
+import { BOARD_SIZES, NUMBER_FLASH_LENGTHS, NUMBER_FLASH_REVEAL_OPTIONS } from '../../game/constants';
+import type {
+  BoardSize,
+  GameMode,
+  MenuView,
+  NumberFlashLength,
+  NumberFlashRevealMs,
+} from '../../game/types';
 import { Leaderboard } from './Leaderboard';
 import gameLogo from '../../assets/game-logo.png';
 
@@ -9,7 +15,7 @@ interface MainMenuProps {
   readonly onOpenGameMenu: (mode: GameMode) => void;
   readonly onBackToRootMenu: () => void;
   readonly onSelectBoardSize: (size: BoardSize) => void;
-  readonly onStartNumberFlash: (length: NumberFlashLength) => void;
+  readonly onStartNumberFlash: (length: NumberFlashLength, revealMs: NumberFlashRevealMs) => void;
 }
 
 export const MainMenu = ({
@@ -20,10 +26,14 @@ export const MainMenu = ({
   onStartNumberFlash,
 }: MainMenuProps) => {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [selectedNumberFlashLength, setSelectedNumberFlashLength] = useState<NumberFlashLength | null>(null);
 
   useEffect(() => {
     if (view !== 'speed-tiles') {
       setShowLeaderboard(false);
+    }
+    if (view !== 'number-flash') {
+      setSelectedNumberFlashLength(null);
     }
   }, [view]);
 
@@ -43,7 +53,11 @@ export const MainMenu = ({
           {view === 'number-flash' ? (
             <>
               <h1 className="menu-title">Number Flash</h1>
-              <p className="menu-subtitle">Memorize the flash, type the exact sequence.</p>
+              <p className="menu-subtitle">
+                {selectedNumberFlashLength === null
+                  ? 'Step 1: Choose amount of numbers.'
+                  : `Step 2: Choose reveal time for ${selectedNumberFlashLength} numbers.`}
+              </p>
             </>
           ) : null}
         </header>
@@ -97,21 +111,47 @@ export const MainMenu = ({
         <Leaderboard onBack={() => setShowLeaderboard(false)} />
       ) : view === 'number-flash' ? (
         <div className="menu-mode">
-          <div className="size-grid">
-            {NUMBER_FLASH_LENGTHS.map((length) => (
-              <button
-                key={length}
-                type="button"
-                onClick={() => onStartNumberFlash(length)}
-                className="size-button"
-              >
-                {length} Numbers
+          {selectedNumberFlashLength === null ? (
+            <>
+              <div className="size-grid">
+                {NUMBER_FLASH_LENGTHS.map((length) => (
+                  <button
+                    key={length}
+                    type="button"
+                    onClick={() => setSelectedNumberFlashLength(length)}
+                    className="size-button"
+                  >
+                    {length} Numbers
+                  </button>
+                ))}
+              </div>
+              <button type="button" onClick={onBackToRootMenu} className="menu-back">
+                Back
               </button>
-            ))}
-          </div>
-          <button type="button" onClick={onBackToRootMenu} className="menu-back">
-            Back
-          </button>
+            </>
+          ) : (
+            <>
+              <div className="size-grid">
+                {NUMBER_FLASH_REVEAL_OPTIONS.map((revealMs) => (
+                  <button
+                    key={revealMs}
+                    type="button"
+                    onClick={() => onStartNumberFlash(selectedNumberFlashLength, revealMs)}
+                    className="size-button"
+                  >
+                    {revealMs}ms
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedNumberFlashLength(null)}
+                className="menu-back"
+              >
+                Back
+              </button>
+            </>
+          )}
         </div>
       ) : null}
     </section>

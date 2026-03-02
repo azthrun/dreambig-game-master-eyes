@@ -5,7 +5,13 @@ import {
   NUMBER_FLASH_MIN_DELAY_MS,
   WRONG_CLICK_PENALTY_MS,
 } from './constants';
-import type { GameAction, GameState, NumberFlashLength, PlayingState } from './types';
+import type {
+  GameAction,
+  GameState,
+  NumberFlashLength,
+  NumberFlashRevealMs,
+  PlayingState,
+} from './types';
 import {
   generateNumberFlashSequence,
   generateShuffledTiles,
@@ -18,9 +24,10 @@ export const initialState: GameState = {
   view: 'root',
 };
 
-const toNumberFlashWaiting = (length: NumberFlashLength): GameState => ({
+const toNumberFlashWaiting = (length: NumberFlashLength, revealMs: NumberFlashRevealMs): GameState => ({
   phase: 'number_flash_waiting',
   length,
+  revealMs,
   sequence: generateNumberFlashSequence(length),
   delayMs: randomIntInclusive(NUMBER_FLASH_MIN_DELAY_MS, NUMBER_FLASH_MAX_DELAY_MS),
 });
@@ -225,7 +232,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       };
     }
     case 'START_NUMBER_FLASH': {
-      return toNumberFlashWaiting(action.length);
+      return toNumberFlashWaiting(action.length, action.revealMs);
     }
     case 'NUMBER_FLASH_DELAY_ELAPSED': {
       if (state.phase !== 'number_flash_waiting') {
@@ -234,6 +241,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       return {
         phase: 'number_flash_revealed',
         length: state.length,
+        revealMs: state.revealMs,
         sequence: state.sequence,
       };
     }
@@ -244,6 +252,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       return {
         phase: 'number_flash_input',
         length: state.length,
+        revealMs: state.revealMs,
         sequence: state.sequence,
         answer: '',
       };
@@ -264,6 +273,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       return {
         phase: 'number_flash_result',
         length: state.length,
+        revealMs: state.revealMs,
         sequence: state.sequence,
         answer: state.answer,
         isCorrect: state.answer === state.sequence,
@@ -273,7 +283,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       if (state.phase !== 'number_flash_result') {
         return state;
       }
-      return toNumberFlashWaiting(state.length);
+      return toNumberFlashWaiting(state.length, state.revealMs);
     }
     default: {
       return state;

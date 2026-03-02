@@ -1,5 +1,6 @@
 export type BoardSize = 3 | 4 | 5 | 6 | 7 | 8;
 export type NumberFlashLength = 4 | 5 | 6 | 7 | 8;
+export type NumberFlashRevealMs = 200 | 300 | 400 | 500;
 export type GameMode = 'speed-tiles' | 'number-flash';
 export type MenuView = 'root' | 'speed-tiles' | 'number-flash';
 
@@ -64,6 +65,7 @@ export interface ResultState {
 export interface NumberFlashWaitingState {
   readonly phase: 'number_flash_waiting';
   readonly length: NumberFlashLength;
+  readonly revealMs: NumberFlashRevealMs;
   readonly sequence: string;
   readonly delayMs: number;
 }
@@ -71,12 +73,14 @@ export interface NumberFlashWaitingState {
 export interface NumberFlashRevealedState {
   readonly phase: 'number_flash_revealed';
   readonly length: NumberFlashLength;
+  readonly revealMs: NumberFlashRevealMs;
   readonly sequence: string;
 }
 
 export interface NumberFlashInputState {
   readonly phase: 'number_flash_input';
   readonly length: NumberFlashLength;
+  readonly revealMs: NumberFlashRevealMs;
   readonly sequence: string;
   readonly answer: string;
 }
@@ -84,6 +88,7 @@ export interface NumberFlashInputState {
 export interface NumberFlashResultState {
   readonly phase: 'number_flash_result';
   readonly length: NumberFlashLength;
+  readonly revealMs: NumberFlashRevealMs;
   readonly sequence: string;
   readonly answer: string;
   readonly isCorrect: boolean;
@@ -116,7 +121,11 @@ export type GameAction =
   | { readonly type: 'DISMISS_SNACKBAR' }
   | { readonly type: 'RETRY_SUBMIT' }
   | { readonly type: 'PLAY_AGAIN' }
-  | { readonly type: 'START_NUMBER_FLASH'; readonly length: NumberFlashLength }
+  | {
+      readonly type: 'START_NUMBER_FLASH';
+      readonly length: NumberFlashLength;
+      readonly revealMs: NumberFlashRevealMs;
+    }
   | { readonly type: 'NUMBER_FLASH_DELAY_ELAPSED' }
   | { readonly type: 'NUMBER_FLASH_HIDE_ELAPSED' }
   | { readonly type: 'SET_NUMBER_FLASH_ANSWER'; readonly answer: string }
