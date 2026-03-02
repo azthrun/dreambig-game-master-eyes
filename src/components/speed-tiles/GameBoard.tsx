@@ -10,11 +10,11 @@ interface GameBoardProps {
 }
 
 const tileFontSize = (boardSize: BoardSize): string => {
-  if (boardSize >= 8) return 'clamp(0.6rem, 1.45vmin, 0.9rem)';
-  if (boardSize >= 7) return 'clamp(0.68rem, 1.8vmin, 1rem)';
-  if (boardSize >= 6) return 'clamp(0.78rem, 2.2vmin, 1.1rem)';
-  if (boardSize >= 5) return 'clamp(0.92rem, 2.8vmin, 1.25rem)';
-  return 'clamp(1rem, 3.4vmin, 1.5rem)';
+  if (boardSize >= 8) return 'clamp(0.75rem, 1.8vmin, 1.1rem)';
+  if (boardSize >= 7) return 'clamp(0.85rem, 2.2vmin, 1.25rem)';
+  if (boardSize >= 6) return 'clamp(1rem, 2.6vmin, 1.4rem)';
+  if (boardSize >= 5) return 'clamp(1.15rem, 3.2vmin, 1.6rem)';
+  return 'clamp(1.3rem, 4vmin, 2rem)';
 };
 
 export const GameBoard = ({ boardSize, tiles, onPress, flashError }: GameBoardProps) => {
