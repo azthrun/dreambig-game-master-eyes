@@ -74,11 +74,9 @@ export const ResultModal = ({
           )}
 
           <div className="result-actions">
-            {won && (
-              <button type="button" onClick={onPlayAgain} className="play-again-button">
-                Play Again
-              </button>
-            )}
+            <button type="button" onClick={onPlayAgain} className="play-again-button">
+              Play Again
+            </button>
             <button type="button" onClick={onBackToMenu} className="modal-action">
               Back to Main Menu
             </button>
