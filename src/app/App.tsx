@@ -1,5 +1,7 @@
 import { useEffect, useReducer } from 'react';
 import { MainMenu } from '../components/main-menu/MainMenu';
+import { NumberFlashBoard } from '../components/number-flash/NumberFlashBoard';
+import { NumberFlashResult } from '../components/number-flash/NumberFlashResult';
 import { CountdownView } from '../components/speed-tiles/CountdownView';
 import { GameBoard } from '../components/speed-tiles/GameBoard';
 import { GameHud } from '../components/speed-tiles/GameHud';
@@ -8,7 +10,7 @@ import { ERROR_FLASH_MS, TIMER_TICK_MS } from '../game/constants';
 import { gameReducer, initialState } from '../game/reducer';
 import { formatElapsed } from '../game/utils';
 import { supabase } from '../lib/supabase';
-import type { ResultState } from '../game/types';
+import type { NumberFlashInputState, ResultState } from '../game/types';
 
 export const App = () => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
@@ -45,6 +47,30 @@ export const App = () => {
     const id = window.setTimeout(() => {
       dispatch({ type: 'CLEAR_ERROR_FLASH' });
     }, ERROR_FLASH_MS);
+
+    return () => window.clearTimeout(id);
+  }, [state]);
+
+  useEffect(() => {
+    if (state.phase !== 'number_flash_waiting') {
+      return;
+    }
+
+    const id = window.setTimeout(() => {
+      dispatch({ type: 'NUMBER_FLASH_DELAY_ELAPSED' });
+    }, state.delayMs);
+
+    return () => window.clearTimeout(id);
+  }, [state]);
+
+  useEffect(() => {
+    if (state.phase !== 'number_flash_revealed') {
+      return;
+    }
+
+    const id = window.setTimeout(() => {
+      dispatch({ type: 'NUMBER_FLASH_HIDE_ELAPSED' });
+    }, state.revealMs);
 
     return () => window.clearTimeout(id);
   }, [state]);
@@ -87,16 +113,23 @@ export const App = () => {
     dispatch({ type: 'SUBMIT_SCORE' });
   };
 
-  const handleResultState = state.phase === 'result' ? (state as ResultState) : null;
+  const speedTilesResultState = state.phase === 'result' ? (state as ResultState) : null;
+  const numberFlashInputState = state.phase === 'number_flash_input' ? (state as NumberFlashInputState) : null;
 
   return (
     <main className="app-shell">
       <section className="stage-shell">
         {state.phase === 'menu' ? (
           <MainMenu
-            onSelect={(size) => {
+            view={state.view}
+            onOpenGameMenu={(mode) => dispatch({ type: 'OPEN_GAME_MENU', mode })}
+            onBackToRootMenu={() => dispatch({ type: 'BACK_TO_ROOT_MENU' })}
+            onSelectBoardSize={(size) => {
               dispatch({ type: 'SELECT_BOARD', size });
             }}
+            onStartNumberFlash={(length, revealMs) =>
+              dispatch({ type: 'START_NUMBER_FLASH', length, revealMs })
+            }
           />
         ) : null}
 
@@ -118,9 +151,51 @@ export const App = () => {
           </div>
         ) : null}
 
-        {state.phase === 'result' && handleResultState ? (
+        {state.phase === 'number_flash_waiting' ? (
+          <NumberFlashBoard
+            length={state.length}
+            visibleSequence={null}
+            showInput={false}
+            answer=""
+            onBackToMenu={() => dispatch({ type: 'RETURN_TO_MENU' })}
+          />
+        ) : null}
+
+        {state.phase === 'number_flash_revealed' ? (
+          <NumberFlashBoard
+            length={state.length}
+            visibleSequence={state.sequence}
+            showInput={false}
+            answer=""
+            onBackToMenu={() => dispatch({ type: 'RETURN_TO_MENU' })}
+          />
+        ) : null}
+
+        {state.phase === 'number_flash_input' && numberFlashInputState ? (
+          <NumberFlashBoard
+            length={numberFlashInputState.length}
+            visibleSequence={null}
+            showInput
+            answer={numberFlashInputState.answer}
+            onAnswerChange={(answer) => dispatch({ type: 'SET_NUMBER_FLASH_ANSWER', answer })}
+            onSubmit={() => dispatch({ type: 'SUBMIT_NUMBER_FLASH_ANSWER' })}
+            onBackToMenu={() => dispatch({ type: 'RETURN_TO_MENU' })}
+          />
+        ) : null}
+
+        {state.phase === 'number_flash_result' ? (
+          <NumberFlashResult
+            isCorrect={state.isCorrect}
+            answer={state.answer}
+            correctSequence={state.sequence}
+            onPlayAgain={() => dispatch({ type: 'PLAY_NUMBER_FLASH_AGAIN' })}
+            onBackToMenu={() => dispatch({ type: 'RETURN_TO_MENU' })}
+          />
+        ) : null}
+
+        {state.phase === 'result' && speedTilesResultState ? (
           <ResultModal
-            resultState={handleResultState}
+            resultState={speedTilesResultState}
             onBackToMenu={() => dispatch({ type: 'RETURN_TO_MENU' })}
             onPlayAgain={() => dispatch({ type: 'PLAY_AGAIN' })}
             onSetPlayerName={(name) => dispatch({ type: 'SET_PLAYER_NAME', playerName: name })}

@@ -1,6 +1,8 @@
-import type { BoardSize } from './types';
+import type { BoardSize, NumberFlashLength, NumberFlashRevealMs } from './types';
 
 export const BOARD_SIZES: readonly BoardSize[] = [3, 4, 5, 6, 7, 8];
+export const NUMBER_FLASH_LENGTHS: readonly NumberFlashLength[] = [4, 5, 6, 7, 8];
+export const NUMBER_FLASH_REVEAL_OPTIONS: readonly NumberFlashRevealMs[] = [200, 300, 400, 500];
 
 export const BORDER_COLORS = [
   '#EF4444',
@@ -21,3 +23,5 @@ export const WRONG_CLICK_PENALTY_MS = 2000;
 export const TIMER_TICK_MS = 50;
 export const ERROR_FLASH_MS = 350;
 export const TILE_TAP_HINT_MS = 50;
+export const NUMBER_FLASH_MIN_DELAY_MS = 500;
+export const NUMBER_FLASH_MAX_DELAY_MS = 4800;

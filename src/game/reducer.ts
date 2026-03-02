@@ -1,10 +1,36 @@
-import { COUNTDOWN_SECONDS, MAX_FAILURES, WRONG_CLICK_PENALTY_MS } from './constants';
-import type { GameAction, GameState, PlayingState } from './types';
-import { generateShuffledTiles } from './utils';
+import {
+  COUNTDOWN_SECONDS,
+  MAX_FAILURES,
+  NUMBER_FLASH_MAX_DELAY_MS,
+  NUMBER_FLASH_MIN_DELAY_MS,
+  WRONG_CLICK_PENALTY_MS,
+} from './constants';
+import type {
+  GameAction,
+  GameState,
+  NumberFlashLength,
+  NumberFlashRevealMs,
+  PlayingState,
+} from './types';
+import {
+  generateNumberFlashSequence,
+  generateShuffledTiles,
+  randomIntInclusive,
+  sanitizeNumericInput,
+} from './utils';
 
 export const initialState: GameState = {
   phase: 'menu',
+  view: 'root',
 };
+
+const toNumberFlashWaiting = (length: NumberFlashLength, revealMs: NumberFlashRevealMs): GameState => ({
+  phase: 'number_flash_waiting',
+  length,
+  revealMs,
+  sequence: generateNumberFlashSequence(length),
+  delayMs: randomIntInclusive(NUMBER_FLASH_MIN_DELAY_MS, NUMBER_FLASH_MAX_DELAY_MS),
+});
 
 const toResult = (state: PlayingState, won: boolean): GameState => ({
   phase: 'result',
@@ -20,6 +46,21 @@ const toResult = (state: PlayingState, won: boolean): GameState => ({
 
 export const gameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
+    case 'OPEN_GAME_MENU': {
+      return {
+        phase: 'menu',
+        view: action.mode,
+      };
+    }
+    case 'BACK_TO_ROOT_MENU': {
+      if (state.phase !== 'menu') {
+        return state;
+      }
+      return {
+        phase: 'menu',
+        view: 'root',
+      };
+    }
     case 'SELECT_BOARD': {
       return {
         phase: 'countdown',
@@ -189,6 +230,60 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         boardSize: state.boardSize,
         secondsRemaining: COUNTDOWN_SECONDS,
       };
+    }
+    case 'START_NUMBER_FLASH': {
+      return toNumberFlashWaiting(action.length, action.revealMs);
+    }
+    case 'NUMBER_FLASH_DELAY_ELAPSED': {
+      if (state.phase !== 'number_flash_waiting') {
+        return state;
+      }
+      return {
+        phase: 'number_flash_revealed',
+        length: state.length,
+        revealMs: state.revealMs,
+        sequence: state.sequence,
+      };
+    }
+    case 'NUMBER_FLASH_HIDE_ELAPSED': {
+      if (state.phase !== 'number_flash_revealed') {
+        return state;
+      }
+      return {
+        phase: 'number_flash_input',
+        length: state.length,
+        revealMs: state.revealMs,
+        sequence: state.sequence,
+        answer: '',
+      };
+    }
+    case 'SET_NUMBER_FLASH_ANSWER': {
+      if (state.phase !== 'number_flash_input') {
+        return state;
+      }
+      return {
+        ...state,
+        answer: sanitizeNumericInput(action.answer),
+      };
+    }
+    case 'SUBMIT_NUMBER_FLASH_ANSWER': {
+      if (state.phase !== 'number_flash_input' || state.answer.length === 0) {
+        return state;
+      }
+      return {
+        phase: 'number_flash_result',
+        length: state.length,
+        revealMs: state.revealMs,
+        sequence: state.sequence,
+        answer: state.answer,
+        isCorrect: state.answer === state.sequence,
+      };
+    }
+    case 'PLAY_NUMBER_FLASH_AGAIN': {
+      if (state.phase !== 'number_flash_result') {
+        return state;
+      }
+      return toNumberFlashWaiting(state.length, state.revealMs);
     }
     default: {
       return state;
