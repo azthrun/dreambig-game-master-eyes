@@ -37,4 +37,38 @@ describe('gameReducer', () => {
     expect(next.failures).toBe(1);
     expect(next.elapsedMs).toBe(2000);
   });
+
+  it('opens number flash menu from root', () => {
+    const next = gameReducer(initialState, { type: 'OPEN_GAME_MENU', mode: 'number-flash' });
+    expect(next.phase).toBe('menu');
+    if (next.phase !== 'menu') {
+      throw new Error('Expected menu state');
+    }
+    expect(next.view).toBe('number-flash');
+  });
+
+  it('plays number flash round and evaluates incorrect answer', () => {
+    let state = gameReducer(initialState, { type: 'START_NUMBER_FLASH', length: 4 });
+    if (state.phase !== 'number_flash_waiting') {
+      throw new Error('Expected waiting state');
+    }
+
+    state = gameReducer(state, { type: 'NUMBER_FLASH_DELAY_ELAPSED' });
+    if (state.phase !== 'number_flash_revealed') {
+      throw new Error('Expected revealed state');
+    }
+
+    state = gameReducer(state, { type: 'NUMBER_FLASH_HIDE_ELAPSED' });
+    if (state.phase !== 'number_flash_input') {
+      throw new Error('Expected input state');
+    }
+
+    state = gameReducer(state, { type: 'SET_NUMBER_FLASH_ANSWER', answer: '0000' });
+    state = gameReducer(state, { type: 'SUBMIT_NUMBER_FLASH_ANSWER' });
+    expect(state.phase).toBe('number_flash_result');
+    if (state.phase !== 'number_flash_result') {
+      throw new Error('Expected result state');
+    }
+    expect(state.isCorrect).toBe(state.answer === state.sequence);
+  });
 });
