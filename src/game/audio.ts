@@ -1,4 +1,7 @@
+import { MAX_TAP_SOUND_POLYPHONY } from './constants';
+
 let audioContext: AudioContext | null = null;
+let activeVoices = 0;
 
 type WebkitWindow = Window & {
   webkitAudioContext?: typeof AudioContext;
@@ -14,11 +17,26 @@ export const playTapSound = () => {
     return;
   }
 
+  let releaseVoice: (() => void) | null = null;
+
   try {
     audioContext ??= new AudioContextCtor();
     if (audioContext.state === 'suspended') {
       void audioContext.resume();
     }
+
+    if (activeVoices >= MAX_TAP_SOUND_POLYPHONY) {
+      return;
+    }
+    activeVoices += 1;
+    let released = false;
+    releaseVoice = () => {
+      if (released) {
+        return;
+      }
+      released = true;
+      activeVoices = Math.max(0, activeVoices - 1);
+    };
 
     const now = audioContext.currentTime;
     const oscillator = audioContext.createOscillator();
@@ -34,10 +52,14 @@ export const playTapSound = () => {
 
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
+    oscillator.onended = () => {
+      releaseVoice?.();
+    };
 
     oscillator.start(now);
     oscillator.stop(now + 0.08);
   } catch {
+    releaseVoice?.();
     // Ignore audio failures to avoid impacting gameplay.
   }
 };

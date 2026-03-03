@@ -309,10 +309,26 @@ body {
   transform: scale(0.97);
 }
 
+@keyframes tileTapHintFlash {
+  0% {
+    background:
+      radial-gradient(circle at 28% 25%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02) 45%),
+      linear-gradient(180deg, rgba(15, 26, 51, 0.82), rgba(5, 11, 24, 0.92));
+  }
+  45% {
+    background:
+      radial-gradient(circle at 28% 25%, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.1) 45%),
+      linear-gradient(180deg, rgba(32, 84, 136, 0.92), rgba(16, 52, 96, 0.96));
+  }
+  100% {
+    background:
+      radial-gradient(circle at 28% 25%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02) 45%),
+      linear-gradient(180deg, rgba(15, 26, 51, 0.82), rgba(5, 11, 24, 0.92));
+  }
+}
+
 .tile-tap-hint {
-  background:
-    radial-gradient(circle at 28% 25%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1) 45%),
-    linear-gradient(180deg, rgba(32, 84, 136, 0.92), rgba(16, 52, 96, 0.96));
+  animation: tileTapHintFlash 80ms ease-out;
 }
 
 .tile-correct {
