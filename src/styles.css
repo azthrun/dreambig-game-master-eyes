@@ -228,6 +228,18 @@ body {
   color: var(--accent);
 }
 
+.hud-next-block {
+  text-align: center;
+}
+
+.hud-next-number {
+  margin: 4px 0 0;
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-weight: 800;
+  color: #d8ebff;
+}
+
 .hud-hearts {
   display: flex;
   gap: clamp(5px, 1vw, 9px);

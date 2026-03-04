@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { MainMenu } from '../components/main-menu/MainMenu';
 import { NumberFlashBoard } from '../components/number-flash/NumberFlashBoard';
 import { NumberFlashResult } from '../components/number-flash/NumberFlashResult';
@@ -14,6 +14,9 @@ import type { NumberFlashInputState, ResultState } from '../game/types';
 
 export const App = () => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
+  const [fastestRecordMs, setFastestRecordMs] = useState<number | null>(null);
+  const [fastestRecordLoading, setFastestRecordLoading] = useState(false);
+  const [fastestRecordUnavailable, setFastestRecordUnavailable] = useState(false);
 
   useEffect(() => {
     if (state.phase !== 'countdown') {
@@ -109,6 +112,53 @@ export const App = () => {
     submitScore();
   }, [state]);
 
+  useEffect(() => {
+    if (state.phase !== 'result' || !state.won) {
+      setFastestRecordMs(null);
+      setFastestRecordLoading(false);
+      setFastestRecordUnavailable(false);
+      return;
+    }
+
+    let cancelled = false;
+    const fetchFastestRecord = async () => {
+      setFastestRecordLoading(true);
+      setFastestRecordUnavailable(false);
+      setFastestRecordMs(null);
+
+      if (!supabase) {
+        if (!cancelled) {
+          setFastestRecordUnavailable(true);
+          setFastestRecordLoading(false);
+        }
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('speed_tiles')
+        .select('completion_time_ms')
+        .eq('board_size', state.boardSize)
+        .order('completion_time_ms', { ascending: true })
+        .limit(1);
+
+      if (cancelled) {
+        return;
+      }
+
+      if (error) {
+        setFastestRecordUnavailable(true);
+      } else {
+        setFastestRecordMs(data && data.length > 0 ? data[0].completion_time_ms : null);
+      }
+      setFastestRecordLoading(false);
+    };
+
+    void fetchFastestRecord();
+    return () => {
+      cancelled = true;
+    };
+  }, [state]);
+
   const handleSubmitScore = () => {
     dispatch({ type: 'SUBMIT_SCORE' });
   };
@@ -139,6 +189,7 @@ export const App = () => {
           <div className="playing-layout view-transition view-enter">
             <GameHud
               timerText={formatElapsed(state.elapsedMs)}
+              nextNumber={state.expectedNumber}
               failures={state.failures}
               onAbort={() => dispatch({ type: 'RETURN_TO_MENU' })}
             />
@@ -196,6 +247,9 @@ export const App = () => {
         {state.phase === 'result' && speedTilesResultState ? (
           <ResultModal
             resultState={speedTilesResultState}
+            fastestRecordMs={fastestRecordMs}
+            fastestRecordLoading={fastestRecordLoading}
+            fastestRecordUnavailable={fastestRecordUnavailable}
             onBackToMenu={() => dispatch({ type: 'RETURN_TO_MENU' })}
             onPlayAgain={() => dispatch({ type: 'PLAY_AGAIN' })}
             onSetPlayerName={(name) => dispatch({ type: 'SET_PLAYER_NAME', playerName: name })}

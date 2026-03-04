@@ -2,11 +2,12 @@ import { MAX_FAILURES } from '../../game/constants';
 
 interface GameHudProps {
   readonly timerText: string;
+  readonly nextNumber: number;
   readonly failures: number;
   readonly onAbort: () => void;
 }
 
-export const GameHud = ({ timerText, failures, onAbort }: GameHudProps) => {
+export const GameHud = ({ timerText, nextNumber, failures, onAbort }: GameHudProps) => {
   const hearts = Array.from({ length: MAX_FAILURES }, (_, index) => index < MAX_FAILURES - failures);
 
   return (
@@ -15,6 +16,12 @@ export const GameHud = ({ timerText, failures, onAbort }: GameHudProps) => {
         <p className="hud-label">Time</p>
         <p className="hud-time" aria-live="polite">
           {timerText}
+        </p>
+      </div>
+      <div className="hud-next-block">
+        <p className="hud-label">Next</p>
+        <p className="hud-next-number" aria-live="polite">
+          {nextNumber}
         </p>
       </div>
       <div className="hud-hearts" aria-label="remaining lives">

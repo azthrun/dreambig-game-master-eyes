@@ -3,6 +3,9 @@ import { Snackbar } from '../main-menu/Snackbar';
 
 interface ResultModalProps {
   readonly resultState: ResultState;
+  readonly fastestRecordMs: number | null;
+  readonly fastestRecordLoading: boolean;
+  readonly fastestRecordUnavailable: boolean;
   readonly onBackToMenu: () => void;
   readonly onPlayAgain: () => void;
   readonly onSetPlayerName: (name: string) => void;
@@ -13,6 +16,9 @@ interface ResultModalProps {
 
 export const ResultModal = ({
   resultState,
+  fastestRecordMs,
+  fastestRecordLoading,
+  fastestRecordUnavailable,
   onBackToMenu,
   onPlayAgain,
   onSetPlayerName,
@@ -36,9 +42,23 @@ export const ResultModal = ({
             {won ? 'Great sequence mastery.' : 'You reached the maximum failures.'}
           </p>
           {won ? (
-            <p className="modal-time-row">
-              Final Time: <span className="modal-time-value">{resultState.elapsedMs !== undefined ? formatTime(resultState.elapsedMs) : ''}</span>
-            </p>
+            <>
+              <p className="modal-time-row">
+                Final Time: <span className="modal-time-value">{resultState.elapsedMs !== undefined ? formatTime(resultState.elapsedMs) : ''}</span>
+              </p>
+              <p className="modal-time-row">
+                Fastest Record ({resultState.boardSize}x{resultState.boardSize}):{' '}
+                <span className="modal-time-value">
+                  {fastestRecordLoading
+                    ? 'Loading...'
+                    : fastestRecordUnavailable
+                      ? 'Unavailable'
+                      : fastestRecordMs === null
+                        ? 'No record yet'
+                        : formatTime(fastestRecordMs)}
+                </span>
+              </p>
+            </>
           ) : null}
           
           {won && !submitSuccess ? (
